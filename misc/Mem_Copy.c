@@ -4,7 +4,8 @@ void *memcopy(void *dst,const void *src, size_t n ){
     long* p_ldst = ( long* )dst;
     long* p_lsrc = ( long* )src;
     
-    // Verify alignment
+    // Verify alignment:
+    // To be misalign is when addresses have binary marks before 0x4
     if( !(dst & misaligned) && !(src & misaligned) )
     {
         // long copy

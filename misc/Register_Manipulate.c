@@ -10,9 +10,10 @@ Please design this with code maintainability in mind as we might like to move
 this to another platform later
 */
 
-enum ReturnStatusEnum{
-    SUCCESS=0,
-    OPERATION_FAILED=1
+enum ReturnStatusEnum
+{
+    SUCCESS = 0,
+    OPERATION_FAILED = 1
 };
 
 static const uint32_t VOLUME_REGISTER = 0x80008000;
@@ -20,37 +21,42 @@ static const uint16_t MUTE_MASK = 0x800;
 static const uint16_t LEVEL_MASK = 0x7FF;
 
 // Set the volume to the register
-ReturnStatusEnum set_volume( uint16_t level ){
+ReturnStatusEnum set_volume(uint16_t level)
+{
     // Limit for volume register
-    if(level >= ( 2<<11 )){
+    if (level >= (1 << 11))
+    {
         return OPERATION_FAILED;
     }
 
-    level &= mask;
+    uint32_t *volume_register = (uint32_t *)VOLUME_REGISTER; // *volume_register: 0x000F, level: 0
 
-    return write_level( level);
-}
+    // Write to the address register: flip mask AND to zero the current volume to retain the mute, and OR with the purposed
+    *volume_register = (~LEVEL_MASK & (*volume_register)) | level;
 
-// Write to the address register
-ReturnStatusEnum write_level( const uint16_t level ){
-    uint32_t* volume_register = (uint32_t*)VOLUME_REGISTER;  // *volume_register: 0x000F, level: 0
-    *volume_register = ( ~LEVEL_MASK & (*volume_register) ) | level;
-    return SUCCESS;
+    return OPERATION_SUCCESS;
 }
 
 //Grab the volume register value from the register address
-ReturnStatusEnum get_volume( uint16_t* level ){
-    const uint16_t temp = *((uint32_t*)VOLUME_REGISTER);
+ReturnStatusEnum get_volume(uint16_t *level)
+{
+    const uint16_t temp = *((uint32_t *)VOLUME_REGISTER);
+
+    // remove mute value by masking only volume
     *level = LEVEL_MASK & temp;
-    
+
     return SUCCESS;
 }
 
 // Toggle mute on the volume register
-ReturnStatusEnum toggle_mute( ){
-    uint32_t* volume_register = (uint32_t *)VOLUME_REGISTER;
-    const uint32_t mute_mask = 0x800;
-    *volume_register = ( *volume_register & ~mute_mask ) | ~(*volume_register & mute_mask);
-    
+ReturnStatusEnum toggle_mute()
+{
+    // grab the register address
+    uint32_t *volume_register = (uint32_t *)VOLUME_REGISTER;
+
+    // assign current value with flip mute mask to retain volume but erase current toggle condition
+    // and OR with flip the current value of the mute value that masks out the volume.
+    *volume_register = (*volume_register & ~MUTE_MASK) | ((~(*volume_register)) & MUTE_MASK);
+
     return SUCCESS;
 }
