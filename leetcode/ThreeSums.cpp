@@ -2,8 +2,8 @@
 
 // Notice that the solution set must not contain duplicate triplets.
 
-//Time Complexity = O(n^2+nlogn)
-//Space Complexity = O(n)
+// Time Complexity = O(n^2+nlogn) = 0(n)
+// Space Complexity = O(n)
 class Solution
 {
 public:
@@ -11,8 +11,8 @@ public:
     {
         sort(nums.begin(), nums.end());
         vector<vector<int>> storage;
-        //for loop that "hard codes" the first value and go into a two sum
-        // sorted method means that negative numbers are expected for the 0 result i.e. nums[i] <= 0
+        // for loop that "hard codes" the first value and go into a two sum
+        //  sorted method means that negative numbers are expected for the 0 result i.e. nums[i] <= 0
         for (size_t i = 0; i < nums.size() && nums[i] <= 0; ++i)
         {
             if (i == 0 || nums[i - 1] != nums[i])
@@ -21,8 +21,8 @@ public:
         return storage;
     }
 
-    //index will always be the left most point that doesnt move. pinch left and right based on the result
-    //of the summation. if a match occurs then shrink both positions. left will always be non-zero index-wise to check back
+    // index will always be the left most point that doesnt move. pinch left and right based on the result
+    // of the summation. if a match occurs then shrink both positions. left will always be non-zero index-wise to check back
     void twoSum(vector<vector<int>> &storage, vector<int> &nums, int index)
     {
         for (size_t left = 0, right = nums.size() - 1; left < right;)
